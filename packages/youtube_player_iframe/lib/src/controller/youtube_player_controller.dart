@@ -10,7 +10,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:youtube_player_iframe/src/iframe_api/src/functions/video_information.dart';
-import 'package:youtube_player_iframe/src/player_value.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:youtube_player_iframe_web/youtube_player_iframe_web.dart';
 
@@ -109,8 +108,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
   late final YoutubePlayerEventHandler _eventHandler;
   final Completer<void> _initCompleter = Completer();
 
-  final StreamController<YoutubePlayerValue> _valueController =
-      StreamController.broadcast();
+  final StreamController<YoutubePlayerValue> _valueController = StreamController.broadcast();
   YoutubePlayerValue _value = YoutubePlayerValue();
 
   /// A Stream of [YoutubePlayerValue], which allows you to subscribe to changes
@@ -343,7 +341,9 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
       metaData: metaData ?? value.metaData,
     );
 
-    _valueController.add(updatedValue);
+    if (!_valueController.isClosed) {
+      _valueController.add(updatedValue);
+    }
   }
 
   /// Listen to updates in [YoutubePlayerController].
@@ -372,8 +372,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
     if (trimWhitespaces) url = url.trim();
 
     const contentUrlPattern = r'^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?';
-    const embedUrlPattern =
-        r'^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/';
+    const embedUrlPattern = r'^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/';
     const altUrlPattern = r'^https:\/\/youtu\.be\/';
     const shortsUrlPattern = r'^https:\/\/(?:www\.|m\.)?youtube\.com\/shorts\/';
     const musicUrlPattern = r'^https:\/\/(?:music\.)?youtube\.com\/watch\?';
@@ -454,9 +453,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
   Future<List<double>> get availablePlaybackRates async {
     final rates = await _evalWithResult('getAvailablePlaybackRates()');
 
-    return List<num>.from(jsonDecode(rates))
-        .map((r) => r.toDouble())
-        .toList(growable: false);
+    return List<num>.from(jsonDecode(rates)).map((r) => r.toDouble()).toList(growable: false);
   }
 
   @override
