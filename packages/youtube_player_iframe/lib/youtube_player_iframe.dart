@@ -23,6 +23,7 @@ export 'src/helpers/youtube_value_builder.dart';
 export 'src/helpers/youtube_value_provider.dart';
 export 'src/meta_data.dart';
 export 'src/player_params.dart';
+export 'src/player_value.dart';
 export 'src/youtube_player_scaffold.dart';
 
 /// A widget to play or stream Youtube Videos.
@@ -135,9 +136,7 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
     final delta = details.delta.dy;
 
     if (delta.abs() > 10) {
-      delta.isNegative
-          ? _controller.enterFullScreen()
-          : _controller.exitFullScreen();
+      delta.isNegative ? _controller.enterFullScreen() : _controller.exitFullScreen();
     }
   }
 
@@ -149,9 +148,7 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
     final path = uri.path;
 
     String? featureName;
-    if (host.contains('facebook') ||
-        host.contains('twitter') ||
-        host == 'youtu') {
+    if (host.contains('facebook') || host.contains('twitter') || host == 'youtu') {
       featureName = 'social';
     } else if (params.containsKey('feature')) {
       featureName = params['feature'];

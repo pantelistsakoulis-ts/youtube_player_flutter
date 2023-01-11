@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import 'player_value.dart';
-
 /// A widget the scaffolds the [YoutubePlayer]so that it can be moved around easily in the view
 /// and handles the fullscreen functionality.
 class YoutubePlayerScaffold extends StatefulWidget {
@@ -199,9 +197,7 @@ class _FullScreenState extends State<_FullScreen> with WidgetsBindingObserver {
   }
 
   SystemUiMode get _uiMode {
-    return widget.fullScreenOption.enabled
-        ? SystemUiMode.immersive
-        : SystemUiMode.edgeToEdge;
+    return widget.fullScreenOption.enabled ? SystemUiMode.immersive : SystemUiMode.edgeToEdge;
   }
 
   Future<bool> _handleFullScreenBackAction() async {

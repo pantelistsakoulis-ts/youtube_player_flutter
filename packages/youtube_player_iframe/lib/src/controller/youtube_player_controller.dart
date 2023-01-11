@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_iframe/src/iframe_api/src/functions/video_information.dart';
-import 'package:youtube_player_iframe/src/player_value.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:youtube_player_iframe_web/youtube_player_iframe_web.dart';
 
@@ -65,8 +64,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
   /// The set of [JavascriptChannel]s available to JavaScript code running in the player iframe.
   late final Set<JavascriptChannel> javaScriptChannels;
 
-  final StreamController<YoutubePlayerValue> _valueController =
-      StreamController.broadcast();
+  final StreamController<YoutubePlayerValue> _valueController = StreamController.broadcast();
   YoutubePlayerValue _value = YoutubePlayerValue();
 
   /// A Stream of [YoutubePlayerValue], which allows you to subscribe to changes
@@ -303,7 +301,9 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
       metaData: metaData ?? value.metaData,
     );
 
-    _valueController.add(updatedValue);
+    if (!_valueController.isClosed) {
+      _valueController.add(updatedValue);
+    }
   }
 
   /// Listen to updates in [YoutubePlayerController].
@@ -332,8 +332,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
     if (trimWhitespaces) url = url.trim();
 
     const contentUrlPattern = r'^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?';
-    const embedUrlPattern =
-        r'^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/';
+    const embedUrlPattern = r'^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/';
     const altUrlPattern = r'^https:\/\/youtu\.be\/';
     const shortsUrlPattern = r'^https:\/\/(?:www\.|m\.)?youtube\.com\/shorts\/';
     const idPattern = r'([_\-a-zA-Z0-9]{11}).*$';
@@ -412,9 +411,7 @@ class YoutubePlayerController implements YoutubePlayerIFrameAPI {
   Future<List<double>> get availablePlaybackRates async {
     final rates = await _evalWithResult('getAvailablePlaybackRates()');
 
-    return List<num>.from(jsonDecode(rates))
-        .map((r) => r.toDouble())
-        .toList(growable: false);
+    return List<num>.from(jsonDecode(rates)).map((r) => r.toDouble()).toList(growable: false);
   }
 
   @override
